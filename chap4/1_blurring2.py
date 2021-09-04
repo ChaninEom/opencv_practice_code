@@ -6,7 +6,7 @@ src = cv2.imread('rose.bmp', cv2.IMREAD_GRAYSCALE)
 
 if src is None:
     print('Image load failed!')
-    sys.eixt()
+    sys.exit()
 
 cv2.imshow("src", src)
 
