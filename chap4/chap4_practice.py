@@ -147,19 +147,96 @@
 
 # 4th
 
+# import sys
+# import numpy as np
+# import cv2
+
+# src = cv2.imread('noise.bmp', cv2.IMREAD_GRAYSCALE)
+
+# if src is None:
+#     print('Image load failed!')
+#     sys.exit()
+
+# dst = cv2.medianBlur(src, 3)
+
+# cv2.imshow('src', src)
+# cv2.imshow('dst', dst)
+# cv2.waitKey()
+# cv2.destroyAllWindows()
+
+
+
+# 5th
+
+# import sys
+# import numpy as np
+# import cv2
+
+# src= cv2.imread('lenna.bmp', cv2.IMREAD_GRAYSCALE)
+
+# if src is None:
+#     print('Image load failed!')
+#     sys.exit()
+
+# dst = cv2.bilateralFilter(src, -1, 10, 5)
+
+# cv2.imshow('src', src)
+# cv2.imshow('dst', dst)
+# cv2.waitKey()
+# cv2.destroyAllWindows()
+
+
+
+# 6th
+
 import sys
-import numpy as np
 import cv2
+import numpy as np
 
-src = cv2.imread('noise.bmp', cv2.IMREAD_GRAYSCALE)
+def cartoon_filter(img):
+    h, w = img.shape[:2]
+    img = cv2.resize(img, (w//2, h//2))
 
-if src is None:
-    print('Image load failed!')
+    blr = cv2.bilateralFilter(img, -1, 20, 7)
+    edge = 255 - cv2.Canny(img, 50, 120)
+    edge = cv2.cvtColor(edge, cv2.COLOR_GRAY2BGR)
+
+    dst = cv2.bitwise_and(blr, edge)
+    dst = cv2.resize(dst, (w, h))
+
+    return dst
+
+def pencil_sketch(img):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    blr = cv2.GaussianBlur(gray, (0, 0), 3)
+    dst = cv2.divide(gray, blr, scale = 255)
+    dst = cv2.cvtColor(dst, cv2.COLOR_GRAY2BGR)
+
+    return dst
+
+cap = cv2.VideoCapture(0)
+if not cap.isOpened():
+    print('Image open failed!')
     sys.exit()
 
-dst = cv2.medianBlur(src, 3)
+mode = 0
 
-cv2.imshow('src', src)
-cv2.imshow('dst', dst)
-cv2.waitKey()
-cv2.destroyAllWindows()
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    if mode == 1:
+        frame = cartoon_filter(frame)
+    elif mode == 2:
+        frame = pencil_sketch(frame)
+    
+    cv2.imshow('frame', frame)
+    key = cv2.waitKey(1)
+
+    if key == 27:
+        break
+    elif key == ord(' '):
+        mode +=1
+        if mode ==3:
+            mode = 0

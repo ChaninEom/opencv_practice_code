@@ -50,5 +50,5 @@ while True:
         break
     elif key == ord(' '):
         cam_mode +=1
-        if cam_mode == 3:
+        if cam_mode == 3:  
             cam_mode = 0
